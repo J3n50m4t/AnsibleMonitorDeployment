@@ -19,10 +19,10 @@ else
   sudo echo "export NCURSES_NO_UTF8_ACS=1" >> /etc/bash.bashrc.local
 fi
 #check if docker is installed
-which docker
+which docker 
 if ! [ $? -eq 0 ]
 then
-  docker --version | grep "Docker version"
+  docker --version | grep "Docker version" 1>/dev/null 2>&1
   if ! [ $? -eq 0 ]
   then
     sudo apt-get update 1>/dev/null 2>&1
