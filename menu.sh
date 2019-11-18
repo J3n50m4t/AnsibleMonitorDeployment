@@ -43,7 +43,7 @@ then
     sudo usermod -aG docker $USER
     ansible-playbook ./ansiblescripts/deployment.yml --tags network &>/dev/null &
     ansible-playbook ./ansiblescripts/deployment.yml --tags dockerrestart &>/dev/null &
-  then 
+  else 
     clear 1>/dev/null 2>&1
   fi
 else
