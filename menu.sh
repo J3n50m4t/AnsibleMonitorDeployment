@@ -48,28 +48,29 @@ else
   ansible-playbook ./ansiblescripts/deployment.yml --tags dockerrestart &>/dev/null &
   echo "100" | dialog --gauge "Everything installed successfuly, going back to main menu" 10 70 0
   clear
+
+  OPTIONS=( A "Install Netdata"
+            Z "Exit")
+
+  CHOICE=$(dialog --backtitle "Deploy Tools" \
+                  --title "Selection" \
+                  --menu "$MENU" \
+                    15 38 10 \
+                    "${OPTIONS[@]}" \
+                    2>&1 >/dev/tty)
+
+  case $CHOICE in
+    A)
+      tool=netdata
+      dialog --infobox "Installing: $tool" 3 30
+      ansible-playbook ./ansiblescripts/deployment.yml --tags $tool &>/dev/null &
+      sleep 2
+      dialog --msgbox "\n Installed $tool" 0 0
+      ;;
+    Z)
+      clear
+      exit 0
+      ;;
+  esac
+
 fi
-
-OPTIONS=( A "Install Netdata"
-          Z "Exit")
-
-CHOICE=$(dialog --backtitle "Deploy Tools" \
-                --title "Selection" \
-                --menu "$MENU" \
-                  15 38 10 \
-                  "${OPTIONS[@]}" \
-                  2>&1 >/dev/tty)
-
-case $CHOICE in
-  A)
-    tool=netdata
-    dialog --infobox "Installing: $tool" 3 30
-    ansible-playbook ./ansiblescripts/deployment.yml --tags $tool &>/dev/null &
-    sleep 2
-    dialog --msgbox "\n Installed $tool" 0 0
-    ;;
-  Z)
-    clear
-    exit 0
-    ;;
-esac
