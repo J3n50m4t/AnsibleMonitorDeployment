@@ -1,6 +1,5 @@
 ---
   - hosts: localhost
     roles:
-    - { role: dockerrestart, tags: ['dockerrestart'] }
     - { role: network, tags: ['network'] }
     - { role: netdata, tags : ['netdata']}
