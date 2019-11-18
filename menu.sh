@@ -19,7 +19,8 @@ else
   sudo echo "export NCURSES_NO_UTF8_ACS=1" >> /etc/bash.bashrc.local
 fi
 #check if docker is installed
-if [ -e "/usr/bin/docker"]
+docker="/usr/bin/docker"
+if [ -e "$docker"]
 then
   clear 1>/dev/null 2>&1
 else
