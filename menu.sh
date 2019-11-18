@@ -26,7 +26,13 @@ else
   echo "0" | dialog --gauge "Updating repo" 10 70 0
   sudo apt-get update 1>/dev/null 2>&1
   echo "10" | dialog --gauge "Installing docker" 10 70 0
-  sudo apt-get install docker docker-ce -y 1>/dev/null 2>&1
+  sudo apt-get remove docker docker-engine docker.io containerd runc 1>/dev/null 2>&1
+  sudo apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common 1>/dev/null 2>&1
+  curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add - 1>/dev/null 2>&1
+  sudo apt-key fingerprint 0EBFCD88 1>/dev/null 2>&1
+  sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" 1>/dev/null 2>&1
+  sudo apt-get update 1>/dev/null 2>&1
+  sudo apt-get install docker-ce docker-ce-cli containerd.io 1>/dev/null 2>&1
   echo "20" | dialog --gauge "Installing ansible" 10 70 0
   sudo apt-get install ansible -y 1>/dev/null 2>&1
   echo "30" | dialog --gauge "Installing Unzip" 10 70 0
@@ -41,36 +47,34 @@ else
   sudo apt-get install python-pip -y 1>/dev/null 2>&1
   echo "80" | dialog --gauge "Installing docker-py" 10 70 0
   sudo pip install docker-py 1>/dev/null 2>&1
-  echo "90" | dialog --gauge "Setting up docker and installing Portainer" 10 70 0
+  echo "90" | dialog --gauge "Setting up docker and installing" 10 70 0
   sudo groupadd docker
   sudo usermod -aG docker $USER
   ansible-playbook ./ansiblescripts/deployment.yml --tags network &>/dev/null &
   ansible-playbook ./ansiblescripts/deployment.yml --tags dockerrestart &>/dev/null &
   echo "100" | dialog --gauge "Everything installed successfuly, going back to main menu" 10 70 0
-  clear
-
-  OPTIONS=( A "Install Netdata"
-            Z "Exit")
-
-  CHOICE=$(dialog --backtitle "Deploy Tools" \
-                  --title "Selection" \
-                  --menu "$MENU" \
-                    15 38 10 \
-                    "${OPTIONS[@]}" \
-                    2>&1 >/dev/tty)
-
-  case $CHOICE in
-    A)
-      tool=netdata
-      dialog --infobox "Installing: $tool" 3 30
-      ansible-playbook ./ansiblescripts/deployment.yml --tags $tool &>/dev/null &
-      sleep 2
-      dialog --msgbox "\n Installed $tool" 0 0
-      ;;
-    Z)
-      clear
-      exit 0
-      ;;
-  esac
-
 fi
+
+OPTIONS=( A "Install Netdata"
+          Z "Exit")
+
+CHOICE=$(dialog --backtitle "Deploy Tools" \
+                --title "Selection" \
+                --menu "$MENU" \
+                  15 38 10 \
+                  "${OPTIONS[@]}" \
+                  2>&1 >/dev/tty)
+
+case $CHOICE in
+  A)
+    tool=netdata
+    dialog --infobox "Installing: $tool" 3 30
+    ansible-playbook ./ansiblescripts/deployment.yml --tags $tool &>/dev/null &
+    sleep 2
+    dialog --msgbox "\n Installed $tool" 0 0
+    ;;
+  Z)
+    clear
+    exit 0
+    ;;
+esac
